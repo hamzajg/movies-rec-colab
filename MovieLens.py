@@ -15,5 +15,17 @@ class MovieLens:
         self.movieID_to_name = {}
         self.name_to_movieID = {}
 
-        reader = Reader(line_format='user item reating timestamp', sep=',', skipline=1) 
-        print('loadMovieLensLatestSmall')
+        reader = Reader(line_format='user item reating timestamp', sep=',', skipline=1)
+
+        ratingsDataset = Dataset.load_from_file(self.ratingsPath, reader=reader)
+
+        with open(self.moviesPath, newline='', encoding='ISO-8859-1') as csvfile:
+                movieReader = csv.reader(csvfile)
+                next(movieReader)  #Skip header line
+                for row in movieReader:
+                    movieID = int(row[0])
+                    movieName = row[1]
+                    self.movieID_to_name[movieID] = movieName
+                    self.name_to_movieID[movieName] = movieID
+
+        return ratingsDataset
