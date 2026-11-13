@@ -14,5 +14,8 @@ env/
 # Data set downloaded by the notebook
 ml-latest-small/
 
+# Trained model written by the notebook
+model.pkl
+
 # macOS
 .DS_Store

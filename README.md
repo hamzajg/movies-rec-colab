@@ -58,6 +58,8 @@ requirements.txt       numpy, scikit-surprise
 - The notebook trains on the whole small dataset (100k ratings), which is why
   it fits in a free Colab session.
 - `model.pkl` is written next to the notebook and is not tracked.
+- `MOVIEREC_USERS=50` limits the notebook to the first 50 users, which is how CI
+  runs the whole pipeline in about half a minute instead of minutes.
 
 ## License
 
