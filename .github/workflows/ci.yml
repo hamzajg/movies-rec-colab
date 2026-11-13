@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Load dataset (Python 3.13)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        # scikit-surprise builds Cython extensions, so this takes a minute.
+        run: pip install -r requirements.txt
+
+      - name: Load the bundled dataset and use the metrics helpers
+        run: |
+          python - <<'PY'
+          from MovieLens import MovieLens
+          from RecommenderMetrics import RecommenderMetrics
+
+          ml = MovieLens()
+          ratings = ml.loadMovieLensLatestSmall()
+
+          # The dataset committed at ml-latest-small has 100,004 ratings over 9,125 movies.
+          assert len(ml.movieID_to_name) == 9125, len(ml.movieID_to_name)
+          # The reverse map is keyed by title, so duplicate titles collapse it a little.
+          assert len(ml.name_to_movieID) > 9000, len(ml.name_to_movieID)
+          assert len(ratings.raw_ratings) == 100004, len(ratings.raw_ratings)
+
+          # The round trip the notebook relies on for its JSON payload.
+          movie_id = next(iter(ml.movieID_to_name))
+          assert ml.getMovieID(ml.getMovieName(movie_id)) == movie_id
+
+          assert RecommenderMetrics is not None
+          print("ratings:", len(ratings.raw_ratings))
+          print("movies:", len(ml.movieID_to_name))
+          print("sample:", ml.getMovieName(movie_id))
+          PY
