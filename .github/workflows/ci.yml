@@ -29,6 +29,9 @@ jobs:
         # scikit-surprise builds Cython extensions, so this takes a minute.
         run: pip install -r requirements.txt
 
+      - name: Run the unit tests
+        run: python -m unittest discover -s tests -t . -v
+
       - name: Load the bundled dataset and use the metrics helpers
         run: |
           python - <<'PY'
