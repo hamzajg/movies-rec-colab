@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   smoke:
-    name: Load dataset (Python 3.13)
+    name: Tests, dataset and notebook (Python 3.13)
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,23 @@ jobs:
 
       - name: Run the unit tests
         run: python -m unittest discover -s tests -t . -v
+
+      - name: Install the notebook runtime
+        run: pip install jupyter nbconvert ipykernel
+
+      - name: Execute the notebook end to end on a subset of users
+        env:
+          # Keeps the full pipeline (similarities, SVD, evaluation, export, reload)
+          # but runs in seconds instead of minutes.
+          MOVIEREC_USERS: "50"
+        run: |
+          python -m ipykernel install --user --name moviesrec --display-name moviesrec
+          jupyter nbconvert --to notebook --execute MoviesRec.ipynb \
+            --output /tmp/MoviesRec.executed.ipynb \
+            --ExecutePreprocessor.timeout=900 \
+            --ExecutePreprocessor.kernel_name=moviesrec \
+            --TagRemovePreprocessor.enabled=True \
+            --TagRemovePreprocessor.remove_cell_tags=colab-bootstrap
 
       - name: Load the bundled dataset and use the metrics helpers
         run: |
