@@ -48,6 +48,7 @@ MovieLens.py           loads ml-latest-small, maps ids, computes popularity rank
 RecommenderMetrics.py  RMSE, MAE, hit rate, ARHR, coverage, diversity, novelty,
                        and the top-N helper
 ml-latest-small/       the MovieLens latest-small dataset (movies + ratings)
+tests/                 unit tests for the loader and the metrics
 requirements.txt       numpy, scikit-surprise
 ```
 

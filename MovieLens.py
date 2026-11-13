@@ -19,6 +19,9 @@ class MovieLens:
     _datasetDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ml-latest-small')
     ratingsPath = os.path.join(_datasetDir, 'ratings.csv')
     moviesPath = os.path.join(_datasetDir, 'movies.csv')
+    # Not part of the published dataset; only needed for getMiseEnScene. Kept as an
+    # attribute so a test (or a different feature dump) can point it somewhere else.
+    miseEnScenePath = 'LLVisualFeatures13K_Log.csv'
 
     def loadMovieLensLatestSmall(self):
 
@@ -120,7 +123,7 @@ class MovieLens:
 
     def getMiseEnScene(self):
         mes = defaultdict(list)
-        with open("LLVisualFeatures13K_Log.csv", newline='') as csvfile:
+        with open(self.miseEnScenePath, newline='') as csvfile:
             mesReader = csv.reader(csvfile)
             next(mesReader)
             for row in mesReader:
