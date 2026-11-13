@@ -13,13 +13,14 @@ class MovieLens:
 
     movieID_to_name = {}
     name_to_movieID = {}
-    ratingsPath = '/content/movies-rec-colab/ml-latest-small/ratings.csv'
-    moviesPath = '/content/movies-rec-colab/ml-latest-small/movies.csv'
+
+    # Resolved relative to this file: the dataset sits next to it in a plain
+    # checkout and at the same place inside Colab's /content clone.
+    _datasetDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ml-latest-small')
+    ratingsPath = os.path.join(_datasetDir, 'ratings.csv')
+    moviesPath = os.path.join(_datasetDir, 'movies.csv')
 
     def loadMovieLensLatestSmall(self):
-
-        # Look for files relative to the directory we are running from
-        os.chdir(os.path.dirname(sys.argv[0]))
 
         ratingsDataset = 0
         self.movieID_to_name = {}
