@@ -37,6 +37,25 @@ tests/ ── unittest for loader + metrics
   accuracy metrics (beyond-accuracy: coverage/diversity/novelty) are part
   of the deliverable, not an afterthought.
 
+## Serving (`scorer.py`)
+
+`scorer.py` wraps the same pipeline in a tiny FastAPI app: on startup it
+trains the notebook's SVD config (full trainset, `random_state=10`) on the
+committed dataset, precomputes each user's top-50 anti-testset
+predictions, and serves:
+
+- `GET /health` — user/rating counts
+- `GET /` — endpoint info
+- `POST /score` — `{userId, candidateIds?, excludeIds?, limit?}` →
+  `[{movieId, title, predictedRating}]` filtered from the precomputed
+  top-N (candidate/exclude filtering happens at request time, so the
+  precompute stays deep enough — `TOP_N_HEADROOM=50`).
+
+Run: `python -m uvicorn scorer:app --port 8090`. `MOVIEREC_USERS=N`
+shrinks training for dev — same knob CI uses. Startup is a real SVD fit
+(seconds on 100k ratings); there is no committed model dump — the service
+always trains fresh (ADR 0002).
+
 ## Outputs
 
 - `model.pkl` — pickled Surprise model (gitignored, regenerated).
