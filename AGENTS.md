@@ -21,6 +21,7 @@ Verified 2026-11-13 against CI (`.github/workflows/ci.yml`) and README.
 | Unit tests | `python -m unittest discover -s tests -t . -v` |
 | Run notebook (local) | `jupyter notebook MoviesRec.ipynb` — run from repo root; skip the Colab-only first cells (`!pip`, `!git clone`, `%cd /content/`) |
 | CI notebook smoke | `MOVIEREC_USERS=50 jupyter nbconvert --to notebook --execute MoviesRec.ipynb --output /tmp/out.ipynb` (needs `jupyter nbconvert ipykernel`) |
+| Run scorer | `python -m uvicorn scorer:app --port 8090` (`MOVIEREC_USERS=N` shrinks training) |
 
 Dataset `ml-latest-small/` is committed — no download needed. `model.pkl`
 is written next to the notebook and gitignored.
@@ -37,7 +38,9 @@ is written next to the notebook and gitignored.
   first N users (how CI runs fast).
 - `RecommenderMetrics.py` — RMSE, MAE, hit rate, ARHR, cumulative hit rate,
   rating hit rate, coverage, diversity, novelty + top-N helper.
-- `tests/` — unittest for loader + metrics.
+- `tests/` — unittest for loader + metrics + scorer.
+- `scorer.py` — FastAPI scorer: trains the notebook's SVD at startup,
+  precomputes per-user top-50, serves `POST /score`.
 - `ml-latest-small/` — movies.csv + ratings.csv (100k ratings).
 
 ## Conventions
